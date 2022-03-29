@@ -3,10 +3,9 @@ package com.example.notificationworkmanager
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
+import androidx.work.*
 import com.example.notificationworkmanager.workers.NotificationWorker
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val workManager = WorkManager.getInstance(application)
@@ -14,7 +13,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 //    var inputData: Data = AlertDialog.Builder().putInt(DBEventIDTag, DBEventID).build()
 
-    fun initNotificationWorker() {
+
+    fun oneTimeNotificationWorker() {
         val notificationRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
 //                .setInputData(createInputDataForUri())
 //            .setInitialDelay(
@@ -26,4 +26,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         outputWorkInfo = workManager.getWorkInfoByIdLiveData(notificationRequest.id)
         workManager.enqueue(notificationRequest)
     }
+
+    //quando quero que só notifique se tiver bateria
+    val constraints = Constraints.Builder()
+        .setRequiresCharging(true)
+        .build()
+
+    fun periodicNotificationWorker() {
+        val periodicWorkRequest = PeriodicWorkRequest.Builder(NotificationWorker::class.java, 15, TimeUnit.MINUTES)
+            .build()
+        workManager.enqueue(periodicWorkRequest)
+    }
+
+
 }

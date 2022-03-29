@@ -15,8 +15,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.initNotificationWorker()
+        viewModel = ViewModelProvider(this).get(MainViewModel(application)::class.java)
+        viewModel.periodicNotificationWorker()
         viewModel.outputWorkInfo?.observe(this, workInfoObserver())
 
     }
@@ -28,4 +28,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }
